@@ -8,6 +8,8 @@ import useInterval from "./useInterval";
 import gif from "./assets/snake.gif"
 import { Typography } from "@mui/material"
 
+
+
 export default function Game() {
     const canvasRef = useRef();
     const [snake, setSnake] = useState(SNAKE_START);
@@ -15,6 +17,7 @@ export default function Game() {
     const [dir, setDir] = useState([0, -1]);
     const [speed, setSpeed] = useState(null);
     const [gameOver, setGameOver] = useState(false);
+    const [playAgain, setPlayAgain] = useState(false);
 
     useInterval(() => gameLoop(), speed);
 
@@ -24,6 +27,7 @@ export default function Game() {
         setDir([0, -1]);
         setSpeed(SPEED);
         setGameOver(false);
+        setPlayAgain(false)
     }
 
     const levelUp = (snake) => {
@@ -64,6 +68,8 @@ export default function Game() {
     const endGame = () => {
         setSpeed(null);
         setGameOver(true);
+
+        setPlayAgain(true)
     }
 
     const moveSnake = ({ keyCode }) => {
@@ -96,8 +102,12 @@ export default function Game() {
         for (const segment of snk) {
             if (piece[0] === segment[0] && piece[1] === segment[1])
                 return true;
+
         }
+
+        setPlayAgain(false)
         return false;
+
     };
 
     const checkFoodCollision = newSnake => {
@@ -109,6 +119,7 @@ export default function Game() {
             setFood(newFood);
             return true;
         }
+
         return false;
     }
 
@@ -117,7 +128,9 @@ export default function Game() {
         const newSnakeHead = [snakeCopy[0][0] + dir[0], snakeCopy[0][1] + dir[1]];
         snakeCopy.unshift(newSnakeHead);
         levelUp(snake.length);
-        if (checkCollision(newSnakeHead)) endGame();
+        if (checkCollision(newSnakeHead)) {
+            endGame();
+        }
         if (!checkFoodCollision(snakeCopy)) snakeCopy.pop();
         setSnake(snakeCopy);
     }
@@ -150,7 +163,7 @@ export default function Game() {
                         height={`${CANVAS_SIZE[1]}px`}
                     />
                     <br />
-                    <ButtonStart start={() => startGame()} />
+                    <ButtonStart start={() => startGame()} playAgain={playAgain} />
                 </div>
             </div>
             <CssBaseline />
